@@ -5,8 +5,11 @@ import { client } from '../database'
 import { AppError } from '../errors'
 import { sign } from 'jsonwebtoken'
 import { userReturnListSchema, userReturnSchema } from '../schemas/users.schemas'
+import { compare, hash } from 'bcryptjs'
 
 export const createNewUser = async (body: UserCreate): Promise<UserReturn> => {
+    body.password = await hash(body.password, 10)
+
     const queryString: string = format(`
             INSERT INTO "users" (%I)
             VALUES (%L)
@@ -31,8 +34,9 @@ export const loginUser = async (body: UserLogin): Promise<LoginReturn> => {
     }
 
     const user: User = queryResult.rows[0]
+    const comparePassword = await compare(body.password, user.password)
 
-    if(user.password !== body.password) {
+    if(!comparePassword) {
         throw new AppError('Wrong email/password', 401)
     }
 

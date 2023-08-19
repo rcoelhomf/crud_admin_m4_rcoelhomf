@@ -10,7 +10,7 @@ export const postNewUser = async (req: Request, res: Response): Promise<Response
 export const postLoginUser = async (req: Request, res: Response): Promise<Response> => {
     const token = await loginUser(req.body)
 
-    return res.status(201).json(token)
+    return res.status(200).json(token)
 }
 
 export const getAllUsers = async (req: Request, res: Response): Promise<Response> => {
