@@ -1,6 +1,7 @@
-import { NextFunction, Request, Response } from "express";
-import { AppError } from "../errors";
-import { verify } from "jsonwebtoken";
+import { NextFunction, Request, Response } from 'express'
+import { AppError } from '../errors'
+import { verify } from 'jsonwebtoken'
+import { z } from 'zod'
 
 export const verifyTokenMiddleware = (req: Request, res: Response, next: NextFunction): void => {
     const { authorization } = req.headers
@@ -25,6 +26,13 @@ export const verifyUserPermission = (req: Request, res: Response, next: NextFunc
     if(admin) return next()
 
     if(id !== sub) throw new AppError('Insufficient permission', 403)
+
+    return next()
+}
+
+export const validateBody = (schema: z.ZodTypeAny) => (req: Request, res: Response, next: NextFunction) => {
+
+    req.body = schema.parse(req.body)
 
     return next()
 }
